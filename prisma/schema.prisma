@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Doctor {
+  id                  String        @id @default(uuid())
+  name                String
+  email               String        @unique
+  phone               String
+  specialization      String
+  experienceYears     Int           @default(1)
+  availabilityDays    String[]      @default(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+  availableHoursStart String        @default("09:00")
+  availableHoursEnd   String        @default("17:00")
+  isActive            Boolean       @default(true)
+  rating              Float         @default(4.9)
+  avatarUrl           String?
+  bio                 String?
+  roomNumber          String?
+  appointments        Appointment[]
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  @@map("doctors")
+}
+
+model Appointment {
+  id              String            @id @default(uuid())
+  patientName     String
+  patientPhone    String
+  patientEmail    String?
+  doctorId        String
+  doctor          Doctor            @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  appointmentDate DateTime          @db.Date
+  appointmentTime String            // Format "HH:mm", e.g. "09:30"
+  durationMinutes Int               @default(30)
+  reason          String            // e.g. "Root Canal Therapy", "Teeth Whitening", "Routine Cleaning"
+  notes           String?
+  status          String            @default("SCHEDULED") // "SCHEDULED" | "CONFIRMED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "NO_SHOW"
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([doctorId, appointmentDate])
+  @@map("appointments")
+}

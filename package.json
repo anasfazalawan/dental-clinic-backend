@@ -1,0 +1,43 @@
+{
+  "name": "dental-clinic-backend",
+  "version": "1.0.0",
+  "description": "Backend REST API for Dental Clinic Management System using Express, Prisma ORM, and Supabase PostgreSQL",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:push": "prisma db push",
+    "prisma:studio": "prisma studio",
+    "seed": "node prisma/seed.js"
+  },
+  "keywords": [
+    "dental",
+    "clinic-management",
+    "express",
+    "prisma",
+    "postgresql",
+    "supabase",
+    "rest-api"
+  ],
+  "author": "Full Stack Engineer",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "prisma": "^5.22.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
