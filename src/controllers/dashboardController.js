@@ -17,7 +17,7 @@ export const getDashboardStats = async (req, res, next) => {
       totalAppointments,
       todayAppointmentsCount,
       upcomingAppointmentsCount,
-      pendingCount,
+      todayCompletedCount,
       statusCounts,
       todayAppointments,
       recentAppointments,
