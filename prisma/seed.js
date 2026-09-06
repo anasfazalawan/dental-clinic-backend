@@ -11,37 +11,37 @@ export const seedData = async () => {
 
   console.log('🧹 Cleaned existing doctors and appointments.');
 
-  // 2. Create 2 Specialist Doctors
+  // 2. Create 2 Specialist Doctors (Simple Test Data)
   const doctorsData = [
     {
-      name: 'Dr. Sarah Jenkins, DDS',
-      email: 'sarah.jenkins@dentpulse.com',
-      phone: '+1 (555) 234-5678',
-      specialization: 'Orthodontics',
-      experienceYears: 12,
+      name: 'Dr. John Doe, DDS',
+      email: 'john.doe@dentpulse.com',
+      phone: '+1 (555) 123-4567',
+      specialization: 'General Dentistry',
+      experienceYears: 8,
       availabilityDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      availableHoursStart: '08:30',
-      availableHoursEnd: '16:30',
-      isActive: true,
-      rating: 4.95,
-      avatarUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300',
-      bio: 'Board-certified orthodontist specializing in clear aligners, adolescent braces, and surgical orthodontics.',
-      roomNumber: 'Suite 101 - Ortho Wing',
-    },
-    {
-      name: 'Dr. Marcus Vance, DMD',
-      email: 'marcus.vance@dentpulse.com',
-      phone: '+1 (555) 345-6789',
-      specialization: 'Oral & Maxillofacial Surgery',
-      experienceYears: 15,
-      availabilityDays: ['Monday', 'Wednesday', 'Friday'],
-      availableHoursStart: '08:00',
-      availableHoursEnd: '15:00',
+      availableHoursStart: '09:00',
+      availableHoursEnd: '17:00',
       isActive: true,
       rating: 4.9,
       avatarUrl: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=300',
-      bio: 'Specialist in complex dental implantology, wisdom tooth extractions, and reconstructive jaw surgery.',
-      roomNumber: 'OR-1 / Surgical Suite',
+      bio: 'General dental practitioner specializing in preventive care and patient consultations.',
+      roomNumber: 'Room 101',
+    },
+    {
+      name: 'Dr. Jane Smith, DMD',
+      email: 'jane.smith@dentpulse.com',
+      phone: '+1 (555) 987-6543',
+      specialization: 'Orthodontics',
+      experienceYears: 10,
+      availabilityDays: ['Monday', 'Wednesday', 'Friday'],
+      availableHoursStart: '08:30',
+      availableHoursEnd: '16:30',
+      isActive: true,
+      rating: 5.0,
+      avatarUrl: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300',
+      bio: 'Specialist orthodontist focusing on dental alignment and smile makeovers.',
+      roomNumber: 'Room 202',
     },
   ];
 
@@ -52,7 +52,7 @@ export const seedData = async () => {
     console.log(`  ✓ Created Doctor: ${created.name} (${created.specialization})`);
   }
 
-  // 3. Create 2 Sample Appointments
+  // 3. Create 2 Sample Appointments (Simple Test Data)
   const today = new Date();
   const getOffsetDate = (dayOffset) => {
     const d = new Date();
@@ -62,27 +62,27 @@ export const seedData = async () => {
 
   const appointmentsData = [
     {
-      patientName: 'Emma Watson',
-      patientPhone: '+1 (555) 111-2233',
-      patientEmail: 'emma.watson@gmail.com',
-      doctorId: createdDoctors[0].id, // Dr. Sarah Jenkins
+      patientName: 'John Doe',
+      patientPhone: '+1 (555) 111-2222',
+      patientEmail: 'johndoe.patient@example.com',
+      doctorId: createdDoctors[0].id, // Dr. John Doe
       appointmentDate: getOffsetDate(0), // Today
-      appointmentTime: '09:00',
-      durationMinutes: 45,
-      reason: 'Invisalign Progress Check & Tray Fitting',
-      notes: 'Check lower quadrant molar tracking.',
+      appointmentTime: '10:00',
+      durationMinutes: 30,
+      reason: 'Routine Dental Checkup & Cleaning',
+      notes: 'First time visitor checkup.',
       status: 'CONFIRMED',
     },
     {
-      patientName: 'Robert Langdon',
-      patientPhone: '+1 (555) 222-3344',
-      patientEmail: 'robert.langdon@harvard.edu',
-      doctorId: createdDoctors[1].id, // Dr. Marcus Vance
+      patientName: 'Jane Roe',
+      patientPhone: '+1 (555) 333-4444',
+      patientEmail: 'janeroe.patient@example.com',
+      doctorId: createdDoctors[1].id, // Dr. Jane Smith
       appointmentDate: getOffsetDate(1), // Tomorrow
-      appointmentTime: '10:30',
-      durationMinutes: 60,
-      reason: 'Impacted Wisdom Tooth Surgical Consultation',
-      notes: 'Evaluate panoramic x-ray scan.',
+      appointmentTime: '11:00',
+      durationMinutes: 45,
+      reason: 'Orthodontic Consultation',
+      notes: 'Initial braces evaluation.',
       status: 'SCHEDULED',
     },
   ];
@@ -93,6 +93,7 @@ export const seedData = async () => {
   }
 
   console.log(`\n🎉 Seed finished! Populated ${createdDoctors.length} doctors and ${appointmentsData.length} appointments.`);
+
 };
 
 // Execute if run directly
