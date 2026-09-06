@@ -1,9 +1,11 @@
-# 🏥 DentPulse - Dental Clinic Management System (Backend API)
+# 🏥 DentPulse — Backend RESTful API
 
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
-[![Express.js](https://img.shields.io/badge/express-4.21.1-blue.svg)](https://expressjs.com/)
-[![Prisma ORM](https://img.shields.io/badge/prisma-5.22.0-indigo.svg)](https://www.prisma.io/)
-[![Database](https://img.shields.io/badge/database-Supabase%20PostgreSQL-emerald.svg)](https://supabase.com/)
+[![Node.js Version](https://img.shields.io/badge/Node.js-v18+-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![Express.js](https://img.shields.io/badge/Express.js-4.21.1-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![Prisma ORM](https://img.shields.io/badge/Prisma-5.22.0-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![Database](https://img.shields.io/badge/Database-Supabase%20PostgreSQL-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
+[![Zod Validation](https://img.shields.io/badge/Validation-Zod%203.23-3E67B1?logo=zod&logoColor=white)](https://zod.dev/)
+[![Deployment](https://img.shields.io/badge/Deploy-Render-46E3B7?logo=render&logoColor=white)](https://render.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A robust, enterprise-grade RESTful API for the **DentPulse Dental Clinic Management System**. Built with Node.js, Express, Prisma ORM, and Supabase PostgreSQL. Provides complete doctor management, intelligent appointment scheduling with conflict prevention, real-time analytics, and health monitoring for production deployment on Render.
@@ -12,41 +14,61 @@ A robust, enterprise-grade RESTful API for the **DentPulse Dental Clinic Managem
 
 ## 🌟 Key Features
 
-- **Doctor Management (CRUD)**: Create, view, update, and delete doctors with specializations, active status, ratings, and custom availability schedules (days & working hours).
-- **Appointment Scheduling (CRUD)**: Book, reschedule, view, and delete appointments with validation for patient contact details, treatment reasons, and duration.
-- **Smart Conflict Prevention**: Automatically validates doctor working days, daily shift hours, and prevents double-booking overlapping time slots.
-- **Dashboard Analytics**: Real-time aggregated metrics for total doctors, today's schedule, upcoming appointments, and status breakdowns.
-- **Data Validation & Sanitization**: Request validation using Zod schemas with descriptive error responses.
-- **Production-Ready Architecture**: Centralized error handling, CORS security, Helmet security headers, Morgan logging, and `/api/health` monitoring for Render.
-- **Automated Seeding**: One-command seed script to populate realistic specialist doctors and appointments across multiple dates and statuses.
+- **👨‍⚕️ Doctor Management (CRUD)**: Create, view, update, and delete doctors with medical specializations, practice status, ratings, room assignments, and customized weekly availability schedules (days & working hours).
+- **📅 Appointment Scheduling (CRUD)**: Book, reschedule, view, and delete appointments with patient contact details, treatment reasons, and duration.
+- **⚡ Smart Conflict Prevention Engine**: Automatically validates doctor working days, daily shift hours, and prevents double-booking overlapping time slots using the interval collision algorithm (`startA < endB && endA > startB`).
+- **📊 Dashboard Analytics**: Real-time aggregated metrics for total doctors, today's schedule, upcoming appointments, and status breakdowns.
+- **🛡️ Data Validation & Sanitization**: Request validation using Zod schemas with pre-processing to handle empty strings and optional fields cleanly.
+- **🚀 Production-Ready Architecture**: Centralized error handling, CORS security, Helmet security headers, Morgan logging, and `/api/health` monitoring for Render.
+- **🧪 Minimal Test Seed Script**: Fast seed script populating 2 specialist test doctors (`Dr. John Doe` & `Dr. Jane Smith`) and 2 patient visits (`John Doe` & `Jane Roe`).
 
 ---
 
-## 🏗️ Architecture & Database Model
-
-### Entity-Relationship Diagram (ERD)
+## 🏗️ Database Schema & Entity Relationships
 
 ```
-┌──────────────────────────────────────┐       ┌──────────────────────────────────────┐
-│               Doctor                 │       │             Appointment              │
-├──────────────────────────────────────┤       ├──────────────────────────────────────┤
-│ id: String (UUID) [PK]               │1     *│ id: String (UUID) [PK]               │
-│ name: String                         ├───────┤ patientName: String                  │
-│ email: String [UNIQUE]               │       │ patientPhone: String                 │
-│ phone: String                        │       │ patientEmail: String?                │
-│ specialization: String               │       │ doctorId: String [FK]                │
-│ experienceYears: Int                 │       │ appointmentDate: Date                │
-│ availabilityDays: String[]           │       │ appointmentTime: String (HH:mm)      │
-│ availableHoursStart: String (HH:mm)  │       │ durationMinutes: Int                 │
-│ availableHoursEnd: String (HH:mm)    │       │ reason: String                       │
-│ isActive: Boolean                    │       │ notes: String?                       │
-│ rating: Float                        │       │ status: AppointmentStatus            │
-│ avatarUrl: String?                   │       │ createdAt: DateTime                  │
-│ bio: String?                         │       │ updatedAt: DateTime                  │
-│ roomNumber: String?                  │       └──────────────────────────────────────┘
-│ createdAt: DateTime                  │
-│ updatedAt: DateTime                  │
-└──────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│                    Doctor                    │
+├──────────────────────────────────────────────┤
+│ id                  String (UUID) [PK]       │
+│ name                String                   │
+│ email               String [UNIQUE]          │
+│ phone               String                   │
+│ specialization      String                   │
+│ experienceYears     Int                      │
+│ availabilityDays    String[]                 │
+│ availableHoursStart String (HH:mm)           │
+│ availableHoursEnd   String (HH:mm)           │
+│ isActive            Boolean                  │
+│ rating              Float                    │
+│ avatarUrl           String?                  │
+│ bio                 String?                  │
+│ roomNumber          String?                  │
+│ createdAt           DateTime                 │
+│ updatedAt           DateTime                 │
+└──────────────────────┬───────────────────────┘
+                       │ 1
+                       │ 
+                       │ has many
+                       │ 
+                       │ *
+┌──────────────────────┴───────────────────────┐
+│                 Appointment                  │
+├──────────────────────────────────────────────┤
+│ id                  String (UUID) [PK]       │
+│ patientName         String                   │
+│ patientPhone        String                   │
+│ patientEmail        String?                  │
+│ doctorId            String [FK -> Doctor.id] │
+│ appointmentDate     Date                     │
+│ appointmentTime     String (HH:mm)           │
+│ durationMinutes     Int                      │
+│ reason              String                   │
+│ notes               String?                  │
+│ status              String (Enum)            │
+│ createdAt           DateTime                 │
+│ updatedAt           DateTime                 │
+└──────────────────────────────────────────────┘
 ```
 
 ---
@@ -61,7 +83,7 @@ A robust, enterprise-grade RESTful API for the **DentPulse Dental Clinic Managem
 
 ### 1. Installation
 
-Clone the repository and switch to the `develop` branch:
+Clone the repository and checkout the `develop` branch:
 
 ```bash
 git clone <YOUR_BACKEND_REPO_URL> dental-clinic-backend
@@ -85,26 +107,26 @@ PORT=5000
 NODE_ENV=development
 CORS_ORIGIN=http://localhost:5173,http://localhost:3000
 
-# Supabase PostgreSQL Connection String
-# Example: postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?pgbouncer=true
-DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@db.YOUR_PROJECT_REF.supabase.co:5432/postgres"
+# Supabase PostgreSQL Connection String (Session / Transaction pooler or Direct)
+DATABASE_URL="postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres?sslmode=require"
 
-# Optional Direct URL for Prisma migrations when using Supabase connection pooler
-DIRECT_URL="postgresql://postgres:YOUR_PASSWORD@db.YOUR_PROJECT_REF.supabase.co:5432/postgres"
+# Optional Direct URL for Prisma migrations when using Supabase pooler
+# DIRECT_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres"
+
+# Optional Supabase credentials
+SUPABASE_URL=https://[PROJECT_REF].supabase.co
+SUPABASE_PUBLISHABLE_KEY=your_publishable_key
 ```
 
-### 3. Setting Up Supabase Database
+> **Note on Special Characters**: If your database password contains special characters (e.g. `@`, `%`, `#`), make sure they are URL-encoded in the connection string (`@` -> `%40`, `%` -> `%25`).
 
-1. Create a free account at [Supabase](https://supabase.com/).
-2. Create a new project (e.g. `dentpulse-clinic`).
-3. Navigate to **Project Settings** -> **Database**.
-4. Copy the **Connection String** (URI) under `Connection Pooling` (Port 6543) or `Direct Connection` (Port 5432).
-5. Paste it as `DATABASE_URL` in your `.env` file.
-6. Push the Prisma schema to Supabase:
+### 3. Setting Up the Database
+
+1. Push the Prisma schema to Supabase:
    ```bash
    npx prisma db push
    ```
-7. Seed the database with mock clinic data:
+2. Seed the database with the minimal test data (2 test doctors & 2 appointments):
    ```bash
    npm run seed
    ```
@@ -130,110 +152,117 @@ The server will start at `http://localhost:5000`.
 
 | Method | Endpoint | Description | Status Codes |
 |---|---|---|---|
-| `GET` | `/api/health` | Service and database connectivity health check | `200 OK`, `503 Service Unavailable` |
+| `GET` | `/api/health` | Service status and Supabase connection health check | `200 OK`, `503 Service Unavailable` |
 
 ### Dashboard Analytics
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/dashboard/stats` | Aggregated clinic statistics, today's schedule, and doctor workload |
+| Method | Endpoint | Description | Status Codes |
+|---|---|---|---|
+| `GET` | `/api/dashboard/stats` | Aggregated statistics, today's schedule, and doctor workload | `200 OK` |
 
 ### Doctors (`/api/doctors`)
 
-| Method | Endpoint | Description | Query Parameters / Body |
-|---|---|---|---|
-| `GET` | `/api/doctors` | List doctors | `search`, `specialization`, `isActive`, `sort`, `order` |
-| `GET` | `/api/doctors/specializations` | Get list of distinct specializations | None |
-| `GET` | `/api/doctors/:id` | Get single doctor details with appointments | None |
-| `POST` | `/api/doctors` | Create a new doctor | Doctor JSON payload |
-| `PUT` | `/api/doctors/:id` | Update doctor details | Doctor JSON payload |
-| `DELETE` | `/api/doctors/:id` | Delete doctor (checks for active appointments) | `force=true` (optional) |
+| Method | Endpoint | Description | Query Parameters / Body | Status Codes |
+|---|---|---|---|---|
+| `GET` | `/api/doctors` | List doctors with filtering | `search`, `specialization`, `isActive`, `sort`, `order` | `200 OK` |
+| `GET` | `/api/doctors/specializations` | Get list of distinct specializations | None | `200 OK` |
+| `GET` | `/api/doctors/:id` | Get single doctor details with booked visits | None | `200 OK`, `404 Not Found` |
+| `POST` | `/api/doctors` | Create a new doctor | Doctor JSON payload | `201 Created`, `409 Conflict`, `422 Unprocessable` |
+| `PUT` | `/api/doctors/:id` | Update doctor details | Doctor JSON payload | `200 OK`, `404 Not Found`, `422 Unprocessable` |
+| `DELETE` | `/api/doctors/:id` | Delete doctor (checks for active appointments) | `force=true` (optional) | `200 OK`, `400 Bad Request`, `404 Not Found` |
 
 #### Doctor JSON Payload Example:
 ```json
 {
-  "name": "Dr. Sarah Jenkins, DDS",
-  "email": "sarah.jenkins@dentpulse.com",
-  "phone": "+1 (555) 234-5678",
-  "specialization": "Orthodontics",
-  "experienceYears": 12,
+  "name": "Dr. John Doe, DDS",
+  "email": "john.doe@dentpulse.com",
+  "phone": "+1 (555) 100-2001",
+  "specialization": "General Dentistry",
+  "experienceYears": 10,
   "availabilityDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-  "availableHoursStart": "08:30",
-  "availableHoursEnd": "16:30",
+  "availableHoursStart": "09:00",
+  "availableHoursEnd": "17:00",
   "isActive": true,
-  "rating": 4.95,
-  "roomNumber": "Suite 101 - Ortho Wing"
+  "rating": 4.9,
+  "roomNumber": "Suite 101"
 }
 ```
 
 ### Appointments (`/api/appointments`)
 
-| Method | Endpoint | Description | Query Parameters / Body |
-|---|---|---|---|
-| `GET` | `/api/appointments` | List appointments | `doctorId`, `status`, `date`, `startDate`, `endDate`, `search`, `page`, `limit` |
-| `GET` | `/api/appointments/:id` | Get single appointment details | None |
-| `POST` | `/api/appointments` | Schedule a new appointment (validates conflicts) | Appointment JSON payload |
-| `PUT` | `/api/appointments/:id` | Update appointment details | Appointment JSON payload |
-| `PATCH` | `/api/appointments/:id/status` | Update appointment status | `{ "status": "CONFIRMED" }` |
-| `DELETE` | `/api/appointments/:id` | Delete appointment | None |
+| Method | Endpoint | Description | Query Parameters / Body | Status Codes |
+|---|---|---|---|---|
+| `GET` | `/api/appointments` | List appointments with filtering | `doctorId`, `status`, `date`, `startDate`, `endDate`, `search`, `page`, `limit` | `200 OK` |
+| `GET` | `/api/appointments/:id` | Get single appointment details | None | `200 OK`, `404 Not Found` |
+| `POST` | `/api/appointments` | Book appointment (with conflict check) | Appointment JSON payload | `201 Created`, `409 Conflict`, `422 Unprocessable` |
+| `PUT` | `/api/appointments/:id` | Update / reschedule appointment | Appointment JSON payload | `200 OK`, `404 Not Found`, `409 Conflict`, `422 Unprocessable` |
+| `PATCH` | `/api/appointments/:id/status` | Update appointment status | `{ "status": "CONFIRMED" }` | `200 OK`, `404 Not Found`, `422 Unprocessable` |
+| `DELETE` | `/api/appointments/:id` | Delete appointment | None | `200 OK`, `404 Not Found` |
 
 #### Appointment JSON Payload Example:
 ```json
 {
-  "patientName": "Emma Watson",
-  "patientPhone": "+1 (555) 111-2233",
-  "patientEmail": "emma.watson@gmail.com",
-  "doctorId": "c3e8e19b-6b04-4b55-b461-123456789abc",
+  "patientName": "John Doe",
+  "patientPhone": "+1 (555) 019-2831",
+  "patientEmail": "johndoe.patient@example.com",
+  "doctorId": "c1a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6c",
   "appointmentDate": "2026-09-10",
   "appointmentTime": "10:00",
   "durationMinutes": 30,
-  "reason": "Invisalign Progress Check",
-  "notes": "Bring aligner set #14",
+  "reason": "Routine Dental Checkup & Cleaning",
+  "notes": "Patient reports minor sensitivity on upper left molar.",
   "status": "SCHEDULED"
 }
 ```
 
-### Demo Seeding (`/api/seed`)
+### Seed Endpoint (`/api/seed`)
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/seed` | Reset and repopulate the database with sample clinic data |
+| Method | Endpoint | Description | Status Codes |
+|---|---|---|---|
+| `POST` | `/api/seed` | Repopulate database with minimal test records (John Doe test data) | `200 OK`, `500 Internal Error` |
 
 ---
 
-## 🚀 Deploying to Render
+## ⚡ Smart Conflict Prevention Algorithm
 
-1. Push your code to GitHub on the `develop` (or `main`) branch.
-2. Log in to [Render Dashboard](https://dashboard.render.com/).
-3. Click **New +** -> **Web Service**.
-4. Connect your `dental-clinic-backend` GitHub repository.
-5. Configure settings:
+When scheduling or rescheduling an appointment, `src/utils/timeConflict.js` performs validation:
+1. **Doctor Working Day Verification**: Ensures the requested date matches one of the doctor's `availabilityDays`.
+2. **Shift Hours Boundary**: Ensures `[appointmentTime, appointmentTime + duration]` falls strictly within `[availableHoursStart, availableHoursEnd]`.
+3. **Time Interval Collision**: Queries existing active bookings for that doctor on the specified date and verifies that:
+   $$\text{start}_{\text{new}} < \text{end}_{\text{existing}} \quad \text{and} \quad \text{end}_{\text{new}} > \text{start}_{\text{existing}}$$
+   If an overlap is detected, the API returns HTTP `409 Conflict` with clear details of the collision.
+
+---
+
+## 🌐 Deploying to Render (Web Service)
+
+1. Push your repository to GitHub on the `develop` (or `main`) branch.
+2. Go to the [Render Dashboard](https://dashboard.render.com/) and click **New +** -> **Web Service**.
+3. Connect your `dental-clinic-backend` repository.
+4. Configure service settings:
    - **Name**: `dental-clinic-backend`
-   - **Environment**: `Node`
+   - **Runtime**: `Node`
    - **Branch**: `develop`
-   - **Root Directory**: Leave blank (or `./`)
    - **Build Command**: `npm install && npx prisma generate`
    - **Start Command**: `npm start`
    - **Health Check Path**: `/api/health`
-6. Under **Environment Variables**, add:
+5. Under **Environment Variables**, add:
    - `DATABASE_URL`: *Your Supabase PostgreSQL Connection String*
    - `NODE_ENV`: `production`
-   - `CORS_ORIGIN`: `https://your-frontend-subdomain.onrender.com` (or `*`)
-7. Click **Create Web Service**.
+   - `CORS_ORIGIN`: `https://your-frontend-subdomain.onrender.com`
+6. Click **Create Web Service**.
 
 ---
 
 ## 🔒 Security & Best Practices
 
-- **Zero Credentials in Git**: All sensitive credentials are kept in `.env` (excluded by `.gitignore`).
-- **Parameterized SQL via Prisma**: SQL injection attacks are prevented by Prisma's query engine.
-- **Relational Integrity**: Restrictive foreign key constraints prevent orphaned appointments.
-- **Conflict Prevention Engine**: Prevents double-booking doctor schedules.
+- **Zero Hardcoded Secrets**: Secrets are read from environment variables; `.env` is ignored by Git.
+- **SQL Injection Immune**: All database operations use Prisma ORM parameterized queries.
+- **Strict Input Validation**: Zod middleware guarantees valid types and formats before reaching controllers.
+- **Graceful Error Handling**: Unknown runtime exceptions are caught and sanitized to prevent leaking stack traces in production.
 
 ---
 
 ## 📄 License
 
 This project is licensed under the MIT License.
-#   d e n t a l - c l i n i c - b a c k e n d  
- 
