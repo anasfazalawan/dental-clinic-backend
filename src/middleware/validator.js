@@ -34,8 +34,8 @@ export const validStatuses = [
   'NO_SHOW',
 ];
 
-// Doctor Create Schema
-export const createDoctorSchema = z.object({
+// Base Doctor Schema
+const baseDoctorSchema = z.object({
   name: z.string().trim().min(2, 'Name must be at least 2 characters').max(100),
   email: z.string().trim().email('Invalid email address'),
   phone: z.string().trim().min(5, 'Phone number must be at least 5 digits').max(30),
@@ -55,7 +55,10 @@ export const createDoctorSchema = z.object({
   avatarUrl: z.string().url('Invalid avatar URL').optional().or(z.literal('')),
   bio: z.string().max(1000).optional(),
   roomNumber: z.string().max(50).optional(),
-}).refine((data) => {
+});
+
+// Doctor Create Schema with validation
+export const createDoctorSchema = baseDoctorSchema.refine((data) => {
   if (data.availableHoursStart && data.availableHoursEnd) {
     return data.availableHoursStart < data.availableHoursEnd;
   }
@@ -66,10 +69,10 @@ export const createDoctorSchema = z.object({
 });
 
 // Doctor Update Schema
-export const updateDoctorSchema = createDoctorSchema.partial();
+export const updateDoctorSchema = baseDoctorSchema.partial();
 
-// Appointment Create Schema
-export const createAppointmentSchema = z.object({
+// Base Appointment Schema
+const baseAppointmentSchema = z.object({
   patientName: z.string().trim().min(2, 'Patient name must be at least 2 characters').max(100),
   patientPhone: z.string().trim().min(5, 'Patient phone number is required').max(30),
   patientEmail: z.string().trim().email('Invalid email address').optional().or(z.literal('')),
@@ -82,8 +85,10 @@ export const createAppointmentSchema = z.object({
   status: z.enum(['SCHEDULED', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'NO_SHOW']).default('SCHEDULED'),
 });
 
+export const createAppointmentSchema = baseAppointmentSchema;
+
 // Appointment Update Schema
-export const updateAppointmentSchema = createAppointmentSchema.partial();
+export const updateAppointmentSchema = baseAppointmentSchema.partial();
 
 // Appointment Status Update Schema
 export const updateAppointmentStatusSchema = z.object({
