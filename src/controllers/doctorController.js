@@ -7,7 +7,7 @@ import { sendSuccess, sendError } from '../utils/response.js';
  */
 export const getAllDoctors = async (req, res, next) => {
   try {
-    const { search, specialization, isActive, sort = 'name', order = 'asc' } = req.query;
+    const { search, specialization, isActive, sort = 'name', order = 'asc', page, limit } = req.query;
 
     const where = {};
 
@@ -38,20 +38,44 @@ export const getAllDoctors = async (req, res, next) => {
       orderBy.name = 'asc';
     }
 
-    const doctors = await prisma.doctor.findMany({
-      where,
-      orderBy,
-      include: {
-        _count: {
-          select: {
-            appointments: true,
+    const paginationOptions = {};
+    let pageNum = null;
+    let takeLimit = null;
+    if (page || limit) {
+      pageNum = Math.max(1, parseInt(page || '1', 10));
+      takeLimit = Math.max(1, parseInt(limit || '10', 10));
+      paginationOptions.skip = (pageNum - 1) * takeLimit;
+      paginationOptions.take = takeLimit;
+    }
+
+    const [doctors, totalCount] = await Promise.all([
+      prisma.doctor.findMany({
+        where,
+        orderBy,
+        ...paginationOptions,
+        include: {
+          _count: {
+            select: {
+              appointments: true,
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.doctor.count({ where }),
+    ]);
+
+    const activePage = pageNum || 1;
+    const activeLimit = takeLimit || (totalCount > 0 ? totalCount : 1);
+    const totalPages = Math.ceil(totalCount / activeLimit) || 1;
 
     return sendSuccess(res, doctors, 'Doctors retrieved successfully', 200, {
+      total: totalCount,
       count: doctors.length,
+      page: activePage,
+      limit: activeLimit,
+      totalPages,
+      hasNext: activePage < totalPages,
+      hasPrev: activePage > 1,
       filters: { search, specialization, isActive },
     });
   } catch (error) {

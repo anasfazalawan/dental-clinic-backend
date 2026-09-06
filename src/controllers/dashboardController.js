@@ -17,7 +17,7 @@ export const getDashboardStats = async (req, res, next) => {
       totalAppointments,
       todayAppointmentsCount,
       upcomingAppointmentsCount,
-      pendingCount,
+      todayCompletedCount,
       statusCounts,
       todayAppointments,
       recentAppointments,
@@ -54,10 +54,14 @@ export const getDashboardStats = async (req, res, next) => {
         },
       }),
 
-      // 6. Pending status appointments
+      // 6. Today's completed appointments count
       prisma.appointment.count({
         where: {
-          status: 'SCHEDULED',
+          appointmentDate: {
+            gte: startOfToday,
+            lte: endOfToday,
+          },
+          status: 'COMPLETED',
         },
       }),
 
@@ -155,8 +159,9 @@ export const getDashboardStats = async (req, res, next) => {
         totalAppointments,
         todayAppointmentsCount,
         upcomingAppointmentsCount,
-        pendingCount,
+        todayCompletedCount,
         completedCount: statusMap.COMPLETED || 0,
+        pendingCount: statusMap.SCHEDULED || 0,
       },
       statusBreakdown: statusMap,
       todaySchedule: todayAppointments,

@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -30,6 +30,8 @@ model Doctor {
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
 
+  @@index([specialization])
+  @@index([isActive])
   @@map("doctors")
 }
 
@@ -50,5 +52,8 @@ model Appointment {
   updatedAt       DateTime          @updatedAt
 
   @@index([doctorId, appointmentDate])
+  @@index([appointmentDate, status])
+  @@index([status])
+  @@index([patientName])
   @@map("appointments")
 }
