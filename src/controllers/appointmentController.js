@@ -76,9 +76,11 @@ export const getAllAppointments = async (req, res, next) => {
     }
 
     const paginationOptions = {};
-    if (page && limit) {
-      const pageNum = Math.max(1, parseInt(page, 10));
-      const takeLimit = Math.max(1, parseInt(limit, 10));
+    let pageNum = null;
+    let takeLimit = null;
+    if (page || limit) {
+      pageNum = Math.max(1, parseInt(page || '1', 10));
+      takeLimit = Math.max(1, parseInt(limit || '10', 10));
       paginationOptions.skip = (pageNum - 1) * takeLimit;
       paginationOptions.take = takeLimit;
     }
@@ -106,11 +108,18 @@ export const getAllAppointments = async (req, res, next) => {
       prisma.appointment.count({ where }),
     ]);
 
+    const activePage = pageNum || 1;
+    const activeLimit = takeLimit || (totalCount > 0 ? totalCount : 1);
+    const totalPages = Math.ceil(totalCount / activeLimit) || 1;
+
     return sendSuccess(res, appointments, 'Appointments retrieved successfully', 200, {
       total: totalCount,
       count: appointments.length,
-      page: page ? parseInt(page, 10) : 1,
-      limit: limit ? parseInt(limit, 10) : totalCount,
+      page: activePage,
+      limit: activeLimit,
+      totalPages,
+      hasNext: activePage < totalPages,
+      hasPrev: activePage > 1,
     });
   } catch (error) {
     next(error);
