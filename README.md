@@ -236,20 +236,27 @@ When scheduling or rescheduling an appointment, `src/utils/timeConflict.js` perf
 
 ## 🌐 Deploying to Render (Web Service)
 
-1. Push your repository to GitHub on the `develop` (or `main`) branch.
+- **Live Production Service**: [https://dental-clinic-backend-ilhq.onrender.com](https://dental-clinic-backend-ilhq.onrender.com/)
+- **Live Health Endpoint**: [https://dental-clinic-backend-ilhq.onrender.com/api/health](https://dental-clinic-backend-ilhq.onrender.com/api/health)
+
+1. Push your repository to GitHub on the `develop` branch:
+   ```bash
+   git push origin develop
+   ```
 2. Go to the [Render Dashboard](https://dashboard.render.com/) and click **New +** -> **Web Service**.
-3. Connect your `dental-clinic-backend` repository.
+3. Connect your `anasfazalawan/dental-clinic-backend` repository.
 4. Configure service settings:
    - **Name**: `dental-clinic-backend`
    - **Runtime**: `Node`
    - **Branch**: `develop`
-   - **Build Command**: `npm install && npx prisma generate`
+   - **Build Command**: `npm install && npx prisma generate && npx prisma db push`
    - **Start Command**: `npm start`
    - **Health Check Path**: `/api/health`
 5. Under **Environment Variables**, add:
-   - `DATABASE_URL`: *Your Supabase PostgreSQL Connection String*
+   - `DATABASE_URL`: *Your Supabase PostgreSQL Connection String (Pooler)*
+   - `DIRECT_URL`: *Your Supabase PostgreSQL Direct Connection String*
    - `NODE_ENV`: `production`
-   - `CORS_ORIGIN`: `https://your-frontend-subdomain.onrender.com`
+   - `CORS_ORIGIN`: `http://localhost:5173,https://dental-clinic-frontend-nine.vercel.app`
 6. Click **Create Web Service**.
 
 ---
