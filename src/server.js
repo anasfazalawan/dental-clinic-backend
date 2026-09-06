@@ -73,14 +73,22 @@ const startServer = async () => {
     }
 
     const server = app.listen(env.PORT, () => {
+      const baseUrl =
+        process.env.RENDER_EXTERNAL_URL ||
+        process.env.SERVER_URL ||
+        (env.isProduction
+          ? 'https://dental-clinic-backend-ilhq.onrender.com'
+          : `http://localhost:${env.PORT}`);
+
       console.log(`\n======================================================`);
       console.log(`🏥 DentPulse Backend API running on port ${env.PORT}`);
-      console.log(`📡 Health Check:  http://localhost:${env.PORT}/api/health`);
-      console.log(`👨‍⚕️ Doctors API:   http://localhost:${env.PORT}/api/doctors`);
-      console.log(`📅 Appointments: http://localhost:${env.PORT}/api/appointments`);
-      console.log(`📊 Dashboard:    http://localhost:${env.PORT}/api/dashboard/stats`);
-      console.log(`🌱 Seed API:     http://localhost:${env.PORT}/api/seed (POST)`);
-      console.log(`⚙️ Environment:   ${env.NODE_ENV}`);
+      console.log(`🌐 Base URL:       ${baseUrl}`);
+      console.log(`📡 Health Check:   ${baseUrl}/api/health`);
+      console.log(`👨‍⚕️ Doctors API:   ${baseUrl}/api/doctors`);
+      console.log(`📅 Appointments:  ${baseUrl}/api/appointments`);
+      console.log(`📊 Dashboard:     ${baseUrl}/api/dashboard/stats`);
+      console.log(`🌱 Seed API:      ${baseUrl}/api/seed (POST)`);
+      console.log(`⚙️ Environment:    ${env.NODE_ENV}`);
       console.log(`======================================================\n`);
     });
 
